@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create New Account</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+
+    .form-container h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    input[type="text"], input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      user-select: none;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Create Account</h2>
+    <div id="error" class="error"></div>
+    <form id="signupForm">
+      <input type="text" id="firstName" placeholder="First Name" required>
+      <input type="text" id="lastName" placeholder="Last Name" required>
+      <input type="email" id="email" placeholder="Email" required>
+
+      <div class="form-group">
+        <input type="password" id="password" placeholder="New Password" required>
+        <span class="toggle-password" onclick="togglePassword('password', this)">👁️</span>
+      </div>
+
+      <div class="form-group">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+        <span class="toggle-password" onclick="togglePassword('confirmPassword', this)">👁️</span>
+      </div>
+
+      <button type="submit">Create Account</button>
+  	<p style="text-align:center; margin-top: 10px;">
+ 	 Already have an account? <a href="1.html">Login here</a>
+	</p>
+
+    </form>
+  </div>
+
+  <script>
+    function togglePassword(fieldId, icon) {
+      const field = document.getElementById(fieldId);
+      if (field.type === 'password') {
+        field.type = 'text';
+        icon.textContent = '🙈'; // Hide symbol
+      } else {
+        field.type = 'password';
+        icon.textContent = '👁️'; // Show symbol
+      }
+    }
+
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      const errorDiv = document.getElementById('error');
+      errorDiv.textContent = '';
+
+      if (!firstName || !lastName || !email || !password || !confirmPassword) {
+        errorDiv.textContent = 'All fields are required.';
+        return;
+      }
+
+      if (password.length < 8) {
+        errorDiv.textContent = 'Password must be at least 8 characters long.';
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match.';
+        return;
+      }
+
+      // On successful validation
+      alert('Account created successfully!');
+    });
+  </script>
+
+</body>
+</html>
+  

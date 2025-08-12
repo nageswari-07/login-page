@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Forgot Password | Facebook</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+    }
+    .form-box {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .form-box h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .form-box p {
+      font-size: 14px;
+      margin-bottom: 20px;
+      color: #555;
+    }
+    input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #1877f2;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #165ec9;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 15px;
+      color: #1877f2;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-box">
+      <h1>Find Your Account</h1>
+      <p>Please enter your <strong>Gmail</strong> address to search for your account.</p>
+      <form id="forgotForm" action="/reset-password" method="post" onsubmit="return validateEmail()">
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="your.email@gmail.com"
+          required
+        />
+        <button type="submit">Send Reset Link</button>
+      </form>
+      <a href="face.html" class="back-link">← Back to Login</a>
+    </div>
+  </div>
+
+  <script>
+    function validateEmail() {
+      const emailInput = document.getElementById('email').value.trim();
+      const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+      if (!gmailPattern.test(emailInput)) {
+        alert('Please enter a valid Gmail address ending with @gmail.com');
+        return false; // Prevent form submission
+      }
+      // If you want, here you can add code to show a loading spinner or message
+      return true; // Allow form submission
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Use Another Account - Google Style</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: #fff;
+    color: #202124;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .container {
+    width: 360px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
+    padding: 24px 32px 32px;
+    box-sizing: border-box;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .header img {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+  }
+
+  .header h1 {
+    font-weight: 400;
+    font-size: 20px;
+    margin: 0;
+    color: #202124;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="text"] {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+  }
+
+  input[type="text"]:disabled {
+    background-color: #f1f3f4;
+  }
+
+  button {
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #1a73e8;
+    color: white;
+    margin-top: 8px;
+  }
+  button:disabled {
+    background-color: #8ab4f8;
+    cursor: default;
+  }
+
+  .toggle-method {
+    font-size: 14px;
+    color: #1a73e8;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 16px;
+    user-select: none;
+  }
+
+  .otp-section {
+    display: none;
+    flex-direction: column;
+  }
+
+  .otp-section.active {
+    display: flex;
+  }
+
+  .error-msg {
+    color: #d93025;
+    font-size: 13px;
+    margin-top: -16px;
+    margin-bottom: 16px;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="container" role="main" aria-label="Use another Google account">
+  <header class="header">
+    <img src="https://www.gstatic.com/images/branding/product/1x/googleg_32dp.png" alt="Google G logo" />
+    <h1>Sign in</h1>
+  </header>
+
+  <form id="signInForm" novalidate>
+    <!-- Email & Password Section -->
+    <div id="emailPasswordSection" class="method-section">
+      <label for="emailInput">Email</label>
+      <input type="email" id="emailInput" name="emailInput" placeholder="Enter your email" required autocomplete="username" />
+      <div id="emailError" class="error-msg" aria-live="polite"></div>
+
+      <label for="passwordInput">Password</label>
+      <input type="password" id="passwordInput" name="passwordInput" placeholder="Enter your password" required autocomplete="current-password" minlength="6" />
+      <div id="passwordError" class="error-msg" aria-live="polite"></div>
+
+      <button type="submit" id="signInBtn">Sign in</button>
+    </div>
+
+    <!-- Phone Number & OTP Section -->
+    <div id="phoneOtpSection" class="otp-section">
+      <label for="phoneInput">Phone number</label>
+      <input type="tel" id="phoneInput" name="phoneInput" placeholder="+1 234 567 8901" pattern="^\+?\d{10,15}$" required autocomplete="tel" />
+      <div id="phoneError" class="error-msg" aria-live="polite"></div>
+
+      <button type="button" id="sendOtpBtn">Send OTP</button>
+
+      <div id="otpVerification" style="margin-top: 20px; display:none;">
+        <label for="otpInput">Enter OTP</label>
+        <input type="text" id="otpInput" name="otpInput" placeholder="6-digit code" pattern="^\d{6}$" maxlength="6" autocomplete="one-time-code" />
+        <div id="otpError" class="error-msg" aria-live="polite"></div>
+        <button type="submit" id="verifyOtpBtn">Verify OTP</button>
+      </div>
+    </div>
+
+    <div class="toggle-method" id="toggleMethodBtn" role="button" tabindex="0" aria-pressed="false">
+      Use phone number instead
+    </div>
+  </form>
+</div>
+
+<script>
+  const signInForm = document.getElementById('signInForm');
+  const emailPasswordSection = document.getElementById('emailPasswordSection');
+  const phoneOtpSection = document.getElementById('phoneOtpSection');
+  const toggleMethodBtn = document.getElementById('toggleMethodBtn');
+
+  // Email & Password inputs & errors
+  const emailInput = document.getElementById('emailInput');
+  const passwordInput = document.getElementById('passwordInput');
+  const emailError = document.getElementById('emailError');
+  const passwordError = document.getElementById('passwordError');
+
+  // Phone & OTP inputs & errors
+  const phoneInput = document.getElementById('phoneInput');
+  const sendOtpBtn = document.getElementById('sendOtpBtn');
+  const otpVerification = document.getElementById('otpVerification');
+  const otpInput = document.getElementById('otpInput');
+  const otpError = document.getElementById('otpError');
+  const phoneError = document.getElementById('phoneError');
+  const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+
+  let usingPhone = false;
+  let fakeSentOtp = "123456"; // For demo purposes only
+
+  // Toggle between Email/Password and Phone/OTP
+  toggleMethodBtn.addEventListener('click', toggleMethod);
+  toggleMethodBtn.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleMethod();
+    }
+  });
+
+  function toggleMethod() {
+    usingPhone = !usingPhone;
+    if (usingPhone) {
+      emailPasswordSection.style.display = 'none';
+      phoneOtpSection.style.display = 'flex';
+      otpVerification.style.display = 'none';
+      toggleMethodBtn.textContent = 'Use email & password instead';
+      toggleMethodBtn.setAttribute('aria-pressed', 'true');
+      clearErrors();
+    } else {
+      phoneOtpSection.style.display = 'none';
+      emailPasswordSection.style.display = 'flex';
+      toggleMethodBtn.textContent = 'Use phone number instead';
+      toggleMethodBtn.setAttribute('aria-pressed', 'false');
+      clearErrors();
+    }
+  }
+
+  function clearErrors() {
+    emailError.textContent = '';
+    passwordError.textContent = '';
+    phoneError.textContent = '';
+    otpError.textContent = '';
+  }
+
+  // Validate Email & Password on submit
+  signInForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    clearErrors();
+
+    if (!usingPhone) {
+      // Email & Password flow
+      let valid = true;
+
+      if (!emailInput.checkValidity()) {
+        emailError.textContent = 'Please enter a valid email address.';
+        valid = false;
+      }
+      if (!passwordInput.checkValidity()) {
+        passwordError.textContent = 'Please enter a password (at least 6 characters).';
+        valid = false;
+      }
+      if (valid) {
+        alert(`Signing in with Email: ${emailInput.value}`);
+        // Proceed with actual sign-in logic here
+      }
+    } else {
+      // Phone & OTP flow: submitting can only verify OTP if visible
+      if (otpVerification.style.display === 'flex' || otpVerification.style.display === 'block') {
+        if (!otpInput.checkValidity()) {
+          otpError.textContent = 'Please enter the 6-digit OTP.';
+          return;
+        }
+        if (otpInput.value !== fakeSentOtp) {
+          otpError.textContent = 'Incorrect OTP. Please try again.';
+          return;
+        }
+        alert(`Phone number ${phoneInput.value} verified successfully!`);
+        // Proceed with actual sign-in logic here
+      }
+    }
+  });
+
+  // Send OTP button click
+  sendOtpBtn.addEventListener('click', () => {
+    phoneError.textContent = '';
+    otpError.textContent = '';
+
+    if (!phoneInput.checkValidity()) {
+      phoneError.textContent = 'Please enter a valid phone number with country code.';
+      return;
+    }
+    // Simulate sending OTP
+    alert(`OTP sent to ${phoneInput.value} (demo OTP is ${fakeSentOtp})`);
+    otpVerification.style.display = 'flex';
+    otpInput.value = '';
+    otpInput.focus();
+  });
+
+</script>
+
+</body>
+</html>
